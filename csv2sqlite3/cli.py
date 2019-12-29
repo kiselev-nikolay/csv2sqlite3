@@ -38,12 +38,19 @@ class Cli:
                 os.remove(db_path)
             else:
                 raise FileExistsError(
-                    f"Database on {save_to} already exists. Try '-f' argument"
+                    f"Database on {save_to} already exists. Try '-f' flag."
                 )
         db_path.parent.mkdir(exist_ok=True, parents=True)
 
         con = sqlite3.connect(save_path)
-        self._write_csv(path, con)
+        if path.is_dir() and recursive_search:
+            for dirpath, _, filenames in os.walk(path):
+                for filename in filenames:
+                    file_path = Path(dirpath) / filename
+                    if file_path.match("*.csv"):
+                        self._write_csv(file_path, con)
+        else:
+            self._write_csv(path, con)
         con.commit()
         con.close()
 
