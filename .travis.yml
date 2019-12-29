@@ -1,0 +1,10 @@
+language: python
+python:
+- 3
+install:
+- pipenv install --dev
+- pipenv run pip install -e .
+script:
+- pipenv run flake csv2sqlite3/*
+- pipenv run csv2sqlite3 process test/one.csv -f
+- pipenv run csv2sqlite3 process test/tables/ -r -f
